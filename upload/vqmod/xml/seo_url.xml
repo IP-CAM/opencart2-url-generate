@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+    <id><![CDATA[GenerateURL_OpenCart_2.0.x]]></id>
+    <version><![CDATA[1.0.0]]></version>
+    <vqmver><![CDATA[2.5.0]]></vqmver>
+    <author><![CDATA[Gia Hoang - dev.hoanggia@gmail.]]></author>
+
+    <file name="system/library/document.php">
+        <operation>
+            <search position="before"><![CDATA[public function getTitle() {]]></search>
+            <add><![CDATA[
+                public function title2uri($sValue,$db) {
+                        require_once('config.php');
+                        require_once(DIR_SYSTEM . 'library/db.php');
+
+                        $suggested_alias =  str_replace(
+                            array('&', '/', '\\', '"', '+',' '),
+                            array('-', '-', '-', '-', '-','-'),
+                            trim($sValue)
+                        );
+
+                        $suggested_alias = $this->convert_vi_to_en($suggested_alias);
+echo "$suggested_alias";
+                        $query_alias = $db->query("SELECT * FROM " . DB_PREFIX . "url_alias WHERE `keyword` = '$suggested_alias'");
+                        if ($query_alias->num_rows) {
+                            $suggested_id = $query_alias->row['url_alias_id'];
+                            $suggested_alias .= "-$suggested_id";
+                        }
+                        return $suggested_alias ;
+                }
+
+                public function convert_vi_to_en($str){
+                    if(!$str) return "";
+                    $unicode = array(
+                      'a'=>'á|à|ả|ã|ạ|ă|ắ|ặ|ằ|ẳ|ẵ|â|ấ|ầ|ẩ|ẫ|ậ|A|Á|À|Ả|Ã|Ạ|Ă|Ắ|Ặ|Ằ|Ẳ|Ẵ|Â|Ấ|Ầ|Ẩ|Ẫ|Ậ',
+                      'b'=>'B','c'=>'C','d'=>'d|D|đ|Đ',
+                      'e'=>'é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ|E|É|È|Ẻ|Ẽ|Ẹ|Ê|Ế|Ề|Ể|Ễ|Ệ',
+                      'f'=>'F','g'=>'G','h'=>'H',
+                      'i'=>'í|ì|ỉ|ĩ|ị|I|Í|Ì|Ỉ|Ĩ|Ị',
+                      'j'=>'J','k'=>'K','l'=>'L','m'=>'M','n'=>'N',
+                      'o'=>'ó|ò|ỏ|õ|ọ|ô|ố|ồ|ổ|ỗ|ộ|ơ|ớ|ờ|ở|ỡ|ợ|O|Ó|Ò|Ỏ|Õ|Ọ|Ô|Ố|Ồ|Ổ|Õ|Ộ|Ơ|Ớ|Ờ|Ở|Ỡ|Ợ',
+                      'p'=>'P','q'=>'Q','r'=>'R','s'=>'S','t'=>'T',
+                      'u'=>'ú|ù|ủ|ũ|ụ|ư|ứ|ừ|ử|ữ|ự|U|Ú|Ù|Ủ|Ũ|Ụ|Ư|Ứ|Ừ|Ử|Ữ|Ự',
+                      'v'=>'V','w'=>'W','x'=>'X',
+                      'y'=>'ý|ỳ|ỷ|ỹ|ỵ|Y|Ý|Ỳ|Ỷ|Ỹ|Ỵ',
+                      'z'=>'Z',
+                    );
+                    foreach($unicode as $nonUnicode=>$uni)
+                        $str = preg_replace("/($uni)/i",$nonUnicode,$str);
+
+                    return $str;
+                }
+			]]></add>
+        </operation>
+    </file>
+
+    <file name="admin/model/catalog/product.php">
+        <operation>
+            <search position="replace"><![CDATA[if (isset($data['keyword'])) {]]></search>
+            <add><![CDATA[
+			if (isset($data['keyword'])) {
+				$keyword = $this->document->title2uri($data['product_description'][1]['name'],$this->db);
+				$this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'product_id=" . (int)$product_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+			}else{
+			]]></add>
+        </operation>
+        <operation>
+            <search position="replace"><![CDATA[if ($data['keyword']) {]]></search>
+            <add><![CDATA[
+			if (!$data['keyword']) {
+				$keyword = $this->document->title2uri($data['product_description'][1]['name'],$this->db);
+				$this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'product_id=" . (int)$product_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+			}else{
+			]]></add>
+        </operation>
+    </file>
+
+    <file name="admin/model/catalog/manufacturer.php">
+        <operation>
+            <search position="replace"><![CDATA[if (isset($data['keyword'])) {]]></search>
+            <add><![CDATA[
+                if (isset($data['keyword'])) {
+                    $keyword = $this->document->title2uri($data['name'],$this->db);
+                    $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'manufacturer_id=" . (int)$manufacturer_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+                }
+                else{
+			]]></add>
+        </operation>
+        <operation>
+            <search position="replace"><![CDATA[if ($data['keyword']) {]]></search>
+            <add><![CDATA[
+                if (!$data['keyword']) {
+                    $keyword = $this->document->title2uri($data['name'],$this->db);
+                    $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'manufacturer_id=" . (int)$manufacturer_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+                }
+                else{
+			]]></add>
+        </operation>
+    </file>
+
+    <file name="admin/model/catalog/category.php">
+        <operation>
+            <search position="replace"><![CDATA[if (isset($data['keyword'])) {]]></search>
+            <add><![CDATA[
+                if (isset($data['keyword'])) {
+                    $keyword = $this->document->title2uri($data['category_description'][1]['name'],$this->db);
+                    $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'category_id=" . (int)$category_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+                }
+                else{
+			]]></add>
+        </operation>
+        <operation>
+            <search position="replace"><![CDATA[if ($data['keyword']) {]]></search>
+            <add><![CDATA[
+                if (!$data['keyword']) {
+                    $keyword = $this->document->title2uri($data['category_description'][1]['name'],$this->db);
+                    $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'category_id=" . (int)$category_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+                }
+                else{
+			]]></add>
+        </operation>
+    </file>
+
+    <file name="admin/model/catalog/information.php">
+        <operation>
+            <search position="replace"><![CDATA[if (isset($data['keyword'])) {]]></search>
+            <add><![CDATA[
+                if (isset($data['keyword'])) {
+                    $keyword = $this->document->title2uri($data['information_description'][1]['title'],$this->db);
+                    $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'information_id=" . (int)$information_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+                }
+                else{
+			]]></add>
+        </operation>
+        <operation>
+            <search position="replace"><![CDATA[if ($data['keyword']) {]]></search>
+            <add><![CDATA[
+                if (!$data['keyword']) {
+                    $keyword = $this->document->title2uri($data['information_description'][1]['title'],$this->db);
+                    $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'information_id=" . (int)$information_id . "', keyword = '" . $this->db->escape($keyword) . "'");
+                }
+                else{
+			]]></add>
+        </operation>
+    </file>
+</modification>
