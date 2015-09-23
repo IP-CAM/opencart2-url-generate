@@ -3,8 +3,11 @@
    - Created On		: 09/23/2015
    - Author			: Gia Hoang
    - Contact Email	: dev.hoanggia@gmail.com
-   - Website			: www.hoanggia.name.vn
-   - Last Modified	: 20/11/2012
+   - Website	    : www.hoanggia.name.vn
+
+* Required
+   - Opencart 2.0.x
+   - vQmod
 
 * Installation "Auto Generate URL - OpenCart 2.0.x"
     - 1. Upload the files from the "upload" folder to the corresponding directories.
