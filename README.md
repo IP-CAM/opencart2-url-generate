@@ -2,7 +2,7 @@
    - Module			: Auto Generate URL - OpenCart 2.0.x
    - Created On		: 09/23/2015
    - Author			: Gia Hoang
-   - Contact Email	: dev.hoanggia@gmail.c
+   - Contact Email	: dev.hoanggia@gmail.com
    - Website			: www.hoanggia.name.vn
    - Last Modified	: 20/11/2012
 
