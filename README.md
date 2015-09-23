@@ -7,7 +7,7 @@
 
 * Required
    - Opencart 2.0.x
-   - vQmod
+   - vQmod 2.5.0
 
 * Installation "Auto Generate URL - OpenCart 2.0.x"
     - 1. Upload the files from the "upload" folder to the corresponding directories.
