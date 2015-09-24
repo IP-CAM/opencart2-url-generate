@@ -20,7 +20,7 @@
                         );
 
                         $suggested_alias = $this->convert_vi_to_en($suggested_alias);
-echo "$suggested_alias";
+
                         $query_alias = $db->query("SELECT * FROM " . DB_PREFIX . "url_alias WHERE `keyword` = '$suggested_alias'");
                         if ($query_alias->num_rows) {
                             $suggested_id = $query_alias->row['url_alias_id'];
